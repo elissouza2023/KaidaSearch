@@ -3,6 +3,28 @@ import streamlit as st
 import pandas as pd
 import io
 from fpdf import FPDF
+import streamlit as st
+from PIL import Image
+
+logo = Image.open("logopq.png")
+st.image(logo, width=200)
+st.markdown("## Kaida Search — Análise de Conhecimento ESG em TI")
+st.markdown(
+    """
+    <style>
+    .main {
+        background-color: #f9f9f9;
+    }
+    .reportview-container .markdown-text-container {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 16px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
 st.set_page_config(page_title="Relatório ESG - TI", layout="wide")
 
