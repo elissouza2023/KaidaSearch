@@ -22,9 +22,6 @@ Ajudar líderes e analistas a visualizar correlações entre o perfil dos profis
 
 ---
 
-## 🚀 Como executar localmente
+## 🚀 Execução no Browser
 
-1. Clone este repositório:
-   ```bash
-   git clone https://github.com/elissouza2023/kaida-search.git
-   cd kaida-search
+ https://kaidasearch-oxbvwtfccpbgjzbmqflqsp.streamlit.app
