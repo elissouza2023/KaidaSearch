@@ -33,7 +33,7 @@ st.markdown(
 
 # Introdução executiva
 st.markdown("""
-### 🌟 Objetivo da ferramenta
+### 🎯 Objetivo da ferramenta
 Este relatório interativo permite avaliar o conhecimento e a aceitação das práticas ESG entre colaboradores de TI da sua empresa. Os dados são obtidos por meio de um formulário padronizado e transformados automaticamente em um relatório executivo.
 """)
 
@@ -41,10 +41,7 @@ st.title("📊 Relatório Executivo ESG na TI")
 st.markdown("Este relatório resume, de forma estratégica, como o perfil dos colaboradores e o interesse pelo tema ESG se relacionam com o nível de conhecimento sobre o assunto.")
 
 # Upload do arquivo CSV
-uploaded_file = st.file_uploader("📅 Envie o arquivo .CSV exportado do Google Forms", type="csv")
-
-if not uploaded_file:
-    st.info("Por favor, envie o arquivo CSV da pesquisa para visualizar o relatório.")
+uploaded_file = st.file_uploader("📥 Envie o arquivo .CSV exportado do Google Forms", type="csv")
 
 if uploaded_file:
     # Carregamento e pré-processamento
@@ -138,11 +135,19 @@ if uploaded_file:
         mime="application/pdf"
     )
 
-    # Heatmap de correlação
-    st.subheader("🧽 Mapa de Correlação entre Perfil/Interesse e Conhecimento sobre ESG")
+    # Heatmap
+    st.subheader("🧭 Mapa de Correlação entre Perfil/Interesse e Conhecimento sobre ESG")
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(corr_xy, annot=True, cmap="YlGnBu", fmt=".2f", linewidths=0.5, cbar=True, ax=ax)
     ax.set_title("Correlação entre variáveis de perfil/interesse e conhecimento/aceitação ESG", fontsize=12)
     plt.xticks(rotation=45, ha='right')
     plt.yticks(rotation=0)
     st.pyplot(fig)
+else:
+    st.warning("👆 Envie um arquivo CSV para gerar o relatório e visualizar o mapa de correlação.")
+
+# Rodapé de copyright
+st.markdown("""
+---
+© 2025 Kaida Search · Todos os direitos reservados.
+""")
