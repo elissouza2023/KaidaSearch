@@ -3,12 +3,17 @@ import streamlit as st
 import pandas as pd
 import io
 from fpdf import FPDF
-import streamlit as st
 from PIL import Image
 
+# Configurações iniciais da página
+st.set_page_config(page_title="Relatório ESG - TI", layout="wide")
+
+# Logotipo e cabeçalho
 logo = Image.open("logopq.png")
 st.image(logo, width=200)
 st.markdown("## Kaida Search — Análise de Conhecimento ESG em TI")
+
+# Estilo customizado
 st.markdown(
     """
     <style>
@@ -24,9 +29,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-
-st.set_page_config(page_title="Relatório ESG - TI", layout="wide")
+# Introdução executiva
+st.markdown("""
+### 🎯 Objetivo da ferramenta
+Este relatório interativo permite avaliar o conhecimento e a aceitação das práticas ESG entre colaboradores de TI da sua empresa. Os dados são obtidos por meio de um formulário padronizado e transformados automaticamente em um relatório executivo.
+""")
 
 st.title("📊 Relatório Executivo ESG na TI")
 st.markdown("Este relatório resume, de forma estratégica, como o perfil dos colaboradores e o interesse pelo tema ESG se relacionam com o nível de conhecimento sobre o assunto.")
@@ -39,8 +46,8 @@ if uploaded_file:
     df = pd.read_csv(uploaded_file)
     df.columns = df.columns.str.strip().str.replace('\n', ' ').str.replace('  ', ' ', regex=False)
 
-    # Seleção e renomeação
-    df_selected = df[[
+    # Seleção e renomeação de colunas
+    df_selected = df[[ 
         '1. Qual a sua faixa etária?',
         '2. Qual é o seu nível de formação?',
         '5. Você acha importante que profissionais de TI conheçam e apliquem princípios ESG no seu trabalho?',
@@ -62,7 +69,7 @@ if uploaded_file:
     corr = df_encoded[X_cols + Y_cols].corr()
     corr_xy = corr.loc[X_cols, Y_cols]
 
-    # Renomeando para linguagem executiva
+    # Tradução para linguagem executiva
     colunas_legendas = {
         'Faixa Etária': 'a faixa etária',
         'Formação': 'a formação educacional',
@@ -73,26 +80,25 @@ if uploaded_file:
         'Conhece Política ESG': 'o conhecimento sobre políticas ESG da empresa'
     }
 
-    corr.index = [colunas_legendas.get(c, c) for c in corr.index]
-    corr.columns = [colunas_legendas.get(c, c) for c in corr.columns]
-    corr_xy = corr.loc[list(colunas_legendas.values())[:4], list(colunas_legendas.values())[4:]]
+    corr_xy.index = [colunas_legendas[c] for c in corr_xy.index]
+    corr_xy.columns = [colunas_legendas[c] for c in corr_xy.columns]
 
     # Geração dos insights
     def gerar_insights_executivos(corr_df):
         insights = []
         for x_var in corr_df.index:
             for y_var in corr_df.columns:
-                corr = corr_df.loc[x_var, y_var]
+                valor_corr = corr_df.loc[x_var, y_var]
 
-                if corr >= 0.5:
+                if valor_corr >= 0.5:
                     frase = f"Colaboradores para os quais **{x_var}** é mais evidente tendem a demonstrar maior familiaridade com **{y_var}**."
-                elif corr >= 0.3:
+                elif valor_corr >= 0.3:
                     frase = f"Existe uma tendência de que **{x_var}** esteja associada a maior familiaridade com **{y_var}**."
-                elif corr >= 0.1:
+                elif valor_corr >= 0.1:
                     frase = f"Foi observada uma leve associação entre **{x_var}** e **{y_var}**, sugerindo uma possível influência sutil."
-                elif corr <= -0.3:
+                elif valor_corr <= -0.3:
                     frase = f"Pessoas com **{x_var}** tendem a apresentar menor envolvimento com **{y_var}**, o que pode indicar barreiras que merecem atenção."
-                elif corr <= -0.1:
+                elif valor_corr <= -0.1:
                     frase = f"Existe uma leve tendência de que **{x_var}** esteja associada a menor familiaridade com **{y_var}**."
                 else:
                     continue
@@ -103,24 +109,23 @@ if uploaded_file:
 
     relatorio = gerar_insights_executivos(corr_xy)
 
-    # Exibição
+    # Exibição do relatório
     st.subheader("📌 Recomendações Estratégicas com base nos dados:")
     st.markdown(relatorio)
 
-    # Exportar como PDF
+    # Função para gerar o PDF
     def gerar_pdf(texto):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.set_font("Arial", size=12)
-
+        pdf.multi_cell(0, 10, "RELATÓRIO EXECUTIVO - ESG NA TI\n", align='L')
         for linha in texto.split('\n'):
-            pdf.multi_cell(0, 10, linha)
-
+            pdf.multi_cell(0, 10, linha, align='L')
         return pdf.output(dest='S').encode('latin-1')
 
-    pdf_bytes = gerar_pdf("RELATÓRIO EXECUTIVO - ESG NA TI\n\n" + relatorio)
-
+    # Geração e botão de download do PDF
+    pdf_bytes = gerar_pdf(relatorio)
     st.download_button(
         label="📄 Baixar relatório em PDF",
         data=pdf_bytes,
