@@ -2,7 +2,6 @@ streamlit
 pandas
 scikit-learn
 seaborn
-matplolib
+matplotlib
 numpy
 fpdf
-
